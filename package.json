@@ -1,0 +1,39 @@
+{
+  "name": "cotebook",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Open-source, self-hostable block-based personal notes",
+  "license": "AGPL-3.0-only",
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "npm run dev --workspace @cotebook/server & npm run dev --workspace @cotebook/web; wait",
+    "dev:server": "npm run dev --workspace @cotebook/server",
+    "dev:web": "npm run dev --workspace @cotebook/web",
+    "build": "npm run build --workspace @cotebook/web && npm run build --workspace @cotebook/server",
+    "start": "npm run start --workspace @cotebook/server",
+    "db:generate": "npm run db:generate --workspace @cotebook/server",
+    "db:migrate": "npm run db:migrate --workspace @cotebook/server",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.11.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.12.0",
+    "prettier": "^3.9.9",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.70.1"
+  }
+}

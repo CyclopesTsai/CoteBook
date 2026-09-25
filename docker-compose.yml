@@ -1,0 +1,43 @@
+# One-command self-hosting:  cp .env.example .env  →  edit it  →  docker compose up -d
+# See docs/self-hosting.md for details.
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-cotebook}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-cotebook}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    image: cotebook:latest
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      # Always point at the bundled database, whatever DATABASE_URL says in .env.
+      DATABASE_URL: postgres://${POSTGRES_USER:-cotebook}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-cotebook}
+      HOST: 0.0.0.0
+      PORT: 3000
+      STORAGE_LOCAL_DIR: /app/data/uploads
+    ports:
+      - '${PUBLISH_PORT:-3000}:3000'
+    volumes:
+      - uploads:/app/data/uploads
+
+volumes:
+  db-data:
+  uploads:

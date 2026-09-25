@@ -1,0 +1,81 @@
+{
+  "app": {
+    "name": "CoteBook",
+    "loading": "Loading…",
+    "error": "Something went wrong.",
+    "retry": "Retry",
+    "networkError": "Can't reach the server. Check your connection."
+  },
+  "auth": {
+    "loginTitle": "Log in to CoteBook",
+    "registerTitle": "Create your account",
+    "email": "Email",
+    "password": "Password",
+    "displayName": "Name (optional)",
+    "login": "Log in",
+    "register": "Sign up",
+    "logout": "Log out",
+    "noAccount": "Don't have an account?",
+    "haveAccount": "Already have an account?",
+    "passwordHint": "At least {{count}} characters",
+    "noPasswordReset": "Password reset is not available yet. Keep your password somewhere safe.",
+    "registrationDisabled": "Registration is disabled on this server.",
+    "errors": {
+      "invalid_credentials": "Incorrect email or password.",
+      "email_taken": "An account with this email already exists.",
+      "registration_disabled": "Registration is disabled on this server.",
+      "rate_limited": "Too many attempts. Please wait a minute and try again.",
+      "validation_failed": "Please check the fields and try again.",
+      "generic": "Could not complete the request. Please try again."
+    }
+  },
+  "sidebar": {
+    "search": "Search",
+    "newPage": "New page",
+    "pages": "Pages",
+    "addSubpage": "Add a page inside",
+    "more": "More actions",
+    "delete": "Delete",
+    "expand": "Expand",
+    "collapse": "Collapse",
+    "noPages": "No pages yet",
+    "openMenu": "Open sidebar",
+    "closeMenu": "Close sidebar",
+    "confirmDelete": "Delete “{{title}}” and all of its subpages?",
+    "moveFailed": "Couldn't move the page.",
+    "dragStart": "Picked up {{title}}.",
+    "dragEnd": "Moved {{title}}.",
+    "dragCancel": "Cancelled moving {{title}}."
+  },
+  "page": {
+    "untitled": "Untitled",
+    "titlePlaceholder": "Untitled",
+    "notFound": "This page doesn't exist or has been deleted.",
+    "backHome": "Go to home",
+    "undo": "Undo",
+    "redo": "Redo",
+    "saving": "Saving…",
+    "saved": "Saved",
+    "unsaved": "Unsaved changes",
+    "saveFailed": "Couldn't save. Retrying…",
+    "offline": "Offline — changes will be saved when you reconnect",
+    "readOnly": "Read only",
+    "conflict": "This page was changed on another device.",
+    "conflictLoad": "Load their version",
+    "conflictKeep": "Keep mine",
+    "uploadFailed": "Image upload failed.",
+    "uploadTooLarge": "The image is too large (max {{size}} MB).",
+    "uploadUnsupported": "Unsupported image type."
+  },
+  "home": {
+    "welcome": "Welcome to CoteBook",
+    "hint": "Pick a page from the sidebar, or create a new one.",
+    "create": "Create a page"
+  },
+  "search": {
+    "placeholder": "Search pages…",
+    "noResults": "No results",
+    "inTitle": "Title match",
+    "close": "Close"
+  }
+}

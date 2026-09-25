@@ -1,0 +1,81 @@
+{
+  "app": {
+    "name": "CoteBook",
+    "loading": "載入中…",
+    "error": "發生錯誤。",
+    "retry": "重試",
+    "networkError": "無法連線到伺服器，請檢查網路連線。"
+  },
+  "auth": {
+    "loginTitle": "登入 CoteBook",
+    "registerTitle": "建立帳號",
+    "email": "Email",
+    "password": "密碼",
+    "displayName": "名稱（選填）",
+    "login": "登入",
+    "register": "註冊",
+    "logout": "登出",
+    "noAccount": "還沒有帳號？",
+    "haveAccount": "已經有帳號了？",
+    "passwordHint": "至少 {{count}} 個字元",
+    "noPasswordReset": "目前尚未提供重設密碼功能，請妥善保存密碼。",
+    "registrationDisabled": "此伺服器已關閉註冊。",
+    "errors": {
+      "invalid_credentials": "Email 或密碼錯誤。",
+      "email_taken": "此 Email 已經註冊過了。",
+      "registration_disabled": "此伺服器已關閉註冊。",
+      "rate_limited": "嘗試次數過多，請稍候一分鐘再試。",
+      "validation_failed": "請檢查輸入的內容後再試一次。",
+      "generic": "無法完成操作，請再試一次。"
+    }
+  },
+  "sidebar": {
+    "search": "搜尋",
+    "newPage": "新增頁面",
+    "pages": "頁面",
+    "addSubpage": "在此頁面內新增頁面",
+    "more": "更多操作",
+    "delete": "刪除",
+    "expand": "展開",
+    "collapse": "收合",
+    "noPages": "還沒有任何頁面",
+    "openMenu": "開啟側邊欄",
+    "closeMenu": "關閉側邊欄",
+    "confirmDelete": "要刪除「{{title}}」及其所有子頁面嗎？",
+    "moveFailed": "無法移動頁面。",
+    "dragStart": "已拿起「{{title}}」。",
+    "dragEnd": "已移動「{{title}}」。",
+    "dragCancel": "已取消移動「{{title}}」。"
+  },
+  "page": {
+    "untitled": "未命名",
+    "titlePlaceholder": "未命名",
+    "notFound": "此頁面不存在或已被刪除。",
+    "backHome": "回到首頁",
+    "undo": "復原",
+    "redo": "重做",
+    "saving": "儲存中…",
+    "saved": "已儲存",
+    "unsaved": "尚未儲存",
+    "saveFailed": "儲存失敗，正在重試…",
+    "offline": "離線中，恢復連線後會自動儲存",
+    "readOnly": "唯讀",
+    "conflict": "此頁面已在其他裝置上被修改。",
+    "conflictLoad": "載入對方的版本",
+    "conflictKeep": "保留我的版本",
+    "uploadFailed": "圖片上傳失敗。",
+    "uploadTooLarge": "圖片太大（上限 {{size}} MB）。",
+    "uploadUnsupported": "不支援此圖片格式。"
+  },
+  "home": {
+    "welcome": "歡迎使用 CoteBook",
+    "hint": "從側邊欄選擇頁面，或建立新頁面。",
+    "create": "建立頁面"
+  },
+  "search": {
+    "placeholder": "搜尋頁面…",
+    "noResults": "沒有結果",
+    "inTitle": "標題相符",
+    "close": "關閉"
+  }
+}
