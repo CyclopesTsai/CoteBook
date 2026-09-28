@@ -14,6 +14,8 @@ import {
   NestBlockButton,
   UnnestBlockButton,
 } from '@blocknote/react';
+import { useTranslation } from 'react-i18next';
+import { RedoIcon, UndoIcon } from '../components/icons';
 import type { Editor } from './schema';
 
 /**
@@ -58,4 +60,38 @@ export function BlockEditor({
       />
     </BlockNoteView>
   );
+}
+
+/** Undo / redo buttons for the top bar, so they are reachable without a keyboard. */
+export function UndoRedoButtons({ editor }: { editor: Editor }) {
+  const { t } = useTranslation();
+  return (
+    <>
+      <button
+        type="button"
+        className="icon-button"
+        aria-label={t('page.undo')}
+        title={t('page.undo')}
+        onClick={() => editor.undo()}
+      >
+        <UndoIcon />
+      </button>
+      <button
+        type="button"
+        className="icon-button"
+        aria-label={t('page.redo')}
+        title={t('page.redo')}
+        onClick={() => editor.redo()}
+      >
+        <RedoIcon />
+      </button>
+    </>
+  );
+}
+
+/** Moves the cursor to the start of the page content (used after pressing Enter in the title). */
+export function focusEditorStart(editor: Editor) {
+  const first = editor.document[0];
+  if (first) editor.setTextCursorPosition(first, 'start');
+  editor.focus();
 }

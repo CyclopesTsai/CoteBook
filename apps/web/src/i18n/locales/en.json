@@ -77,5 +77,11 @@
     "noResults": "No results",
     "inTitle": "Title match",
     "close": "Close"
+  },
+  "demo": {
+    "badge": "Demo · not saved",
+    "sidebarTitle": "CoteBook demo",
+    "banner": "This server runs without a database, so this is a demo. Try anything you like, but your changes stay in this tab only and disappear when you reload.",
+    "footer": "No database is enabled. Changes are not saved."
   }
 }

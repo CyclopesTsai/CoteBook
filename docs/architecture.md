@@ -61,6 +61,18 @@ and only blocks that actually changed get a new `updated_at`.
    other version or keep their own (a forced save).
 4. After a reconnect the client refetches everything, since events may have been missed.
 
+## Running without a database
+
+With `DATABASE_ENABLED=false`, the server connects to no database, runs no migrations and
+starts no event bus. It registers only `/api/health` and `/api/config`. Every other
+`/api` route answers `503 database_disabled`, and registration is reported as closed.
+
+The web client reads `databaseEnabled` from `/api/config` before anything else. When it
+is `false`, the client renders `DemoApp` (`apps/web/src/demo/`) instead of the signed-in
+app. The demo reuses the same editor schema, page tree and layout components, but backs
+them with an in-memory store. Images become `blob:` URLs, and nothing is sent to the
+server.
+
 ## Authorization
 
 All permission decisions live in `apps/server/src/auth/authz.ts`. A request acts as an
@@ -90,7 +102,7 @@ branch on `code`.
 | Method   | Path                 | Description                                                                              |
 | -------- | -------------------- | ---------------------------------------------------------------------------------------- |
 | `GET`    | `/health`            | Liveness and database check                                                              |
-| `GET`    | `/config`            | Public instance settings: registration open, auth providers, upload limits               |
+| `GET`    | `/config`            | Public settings: database enabled, registration open, auth providers, upload limits      |
 | `POST`   | `/auth/register`     | `{ email, password, displayName?, returnToken? }`                                        |
 | `POST`   | `/auth/login`        | `{ email, password, returnToken? }`                                                      |
 | `POST`   | `/auth/logout`       | Revoke the current session                                                               |

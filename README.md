@@ -27,6 +27,9 @@ block editor. Run it on your own server with a single `docker compose up`.
 - **Self-hosted**: one Docker Compose file runs the app and PostgreSQL. Everything is
   configured through environment variables. Images are stored on local disk or any
   S3-compatible service.
+- **Demo mode**: with `DATABASE_ENABLED=false`, CoteBook runs without PostgreSQL and
+  opens an unsaved demo of the editor. See
+  [Running without a database](docs/self-hosting.md#running-without-a-database-demo-mode).
 - **Interface languages**: English and Traditional Chinese.
 
 ## Quick start (self-hosting)

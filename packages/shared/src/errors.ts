@@ -17,6 +17,8 @@ export const ErrorCode = {
   UnsupportedMediaType: 'unsupported_media_type',
   PayloadTooLarge: 'payload_too_large',
   RateLimited: 'rate_limited',
+  /** The instance runs without a database (DATABASE_ENABLED=false). */
+  DatabaseDisabled: 'database_disabled',
   Internal: 'internal_error',
 } as const;
 

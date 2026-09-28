@@ -1,13 +1,21 @@
 # One-command self-hosting:  cp .env.example .env  →  edit it  →  docker compose up -d
 # See docs/self-hosting.md for details.
+#
+# DATABASE_ENABLED in .env switches the database on or off. When it is `false`, the
+# `db` service below is not started (its profile no longer matches COMPOSE_PROFILES)
+# and the app runs in demo mode.
 
 services:
   db:
     image: postgres:16-alpine
+    # Resolves to "database-true" or "database-false"; .env activates "database-true".
+    profiles: ['database-${DATABASE_ENABLED:-true}']
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-cotebook}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      # Not marked required here, so that it may stay empty when the database is off.
+      # With the database on, PostgreSQL itself refuses to start without a password.
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-}
       POSTGRES_DB: ${POSTGRES_DB:-cotebook}
     volumes:
       - db-data:/var/lib/postgresql/data
@@ -24,12 +32,15 @@ services:
     depends_on:
       db:
         condition: service_healthy
+        # Lets the app start on its own when the db service is switched off.
+        required: false
     env_file:
       - path: .env
         required: false
     environment:
+      DATABASE_ENABLED: ${DATABASE_ENABLED:-true}
       # Always point at the bundled database, whatever DATABASE_URL says in .env.
-      DATABASE_URL: postgres://${POSTGRES_USER:-cotebook}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-cotebook}
+      DATABASE_URL: postgres://${POSTGRES_USER:-cotebook}:${POSTGRES_PASSWORD:-}@db:5432/${POSTGRES_DB:-cotebook}
       HOST: 0.0.0.0
       PORT: 3000
       STORAGE_LOCAL_DIR: /app/data/uploads

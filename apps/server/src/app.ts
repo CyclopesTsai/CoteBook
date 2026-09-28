@@ -9,6 +9,7 @@ import Fastify, { type FastifyError } from 'fastify';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { registerAuth } from './auth/plugin.js';
+import type { Config } from './config.js';
 import type { AppContext } from './context.js';
 import { HttpError } from './lib/errors.js';
 import { authRoutes } from './routes/auth.js';
@@ -22,8 +23,12 @@ function errorBody(code: ErrorCode, message: string, details?: unknown): ApiErro
   return { error: details === undefined ? { code, message } : { code, message, details } };
 }
 
-export async function buildApp(ctx: AppContext) {
-  const { config } = ctx;
+/**
+ * Builds the HTTP server. `ctx` is null when the instance runs without a database
+ * (DATABASE_ENABLED=false): only the public metadata endpoints and the web client are
+ * served then, and the client switches to its demo mode.
+ */
+export async function buildApp(config: Config, ctx: AppContext | null) {
   const app = Fastify({
     logger: {
       level: config.logLevel,
@@ -60,11 +65,12 @@ export async function buildApp(ctx: AppContext) {
   await app.register(rateLimit, { global: false });
   await app.register(multipart, { limits: { fileSize: config.maxUploadBytes, files: 1 } });
 
-  registerAuth(app, ctx);
+  if (ctx) registerAuth(app, ctx);
 
   await app.register(
     async (api) => {
-      await metaRoutes(api, ctx);
+      await metaRoutes(api, config, ctx?.db ?? null);
+      if (!ctx) return;
       await authRoutes(api, ctx);
       await pageRoutes(api, ctx);
       await searchRoutes(api, ctx);
@@ -96,6 +102,11 @@ export async function buildApp(ctx: AppContext) {
     if (hasWeb && !isApi && (req.method === 'GET' || req.method === 'HEAD')) {
       // Client-side routing: unknown paths get the SPA shell.
       return reply.header('Cache-Control', 'no-cache').sendFile('index.html');
+    }
+    if (isApi && !ctx) {
+      return reply
+        .code(503)
+        .send(errorBody(ErrorCode.DatabaseDisabled, 'This instance runs without a database'));
     }
     return reply.code(404).send(errorBody(ErrorCode.NotFound, 'Route not found'));
   });

@@ -1,23 +1,16 @@
 import type { Block, PageDetail, PageSummary, UploadResponse } from '@cotebook/shared';
-import { PAGE_TITLE_MAX_LENGTH } from '@cotebook/shared';
-import * as locales from '@blocknote/core/locales';
 import { useCreateBlockNote } from '@blocknote/react';
 import { useQueryClient } from '@tanstack/react-query';
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { api, ApiError } from '../api/client';
 import { queryKeys, useInstanceConfig, usePages, useRenamePage } from '../api/queries';
-import { RedoIcon, UndoIcon } from '../components/icons';
 import { Topbar } from '../layout/AppLayout';
-import { BlockEditor } from './BlockEditor';
+import { BlockEditor, focusEditorStart, UndoRedoButtons } from './BlockEditor';
+import { editorDictionary } from './dictionary';
 import { schema, type PartialEditorBlock } from './schema';
+import { TitleField } from './TitleField';
 import { useAutosave, type SaveStatus } from './useAutosave';
-
-function editorDictionary(lang: string) {
-  if (lang.startsWith('zh')) return locales.zhTW;
-  const short = lang.split('-')[0] as keyof typeof locales;
-  return locales[short] ?? locales.en;
-}
 
 function toEditorBlocks(blocks: Block[]): PartialEditorBlock[] | undefined {
   return blocks.length ? (blocks as unknown as PartialEditorBlock[]) : undefined;
@@ -139,40 +132,11 @@ export function PageView({ page, readOnly = false }: { page: PageDetail; readOnl
     <>
       <Topbar title={<PageTitleCrumb pageId={page.id} fallback={page.title} />}>
         <StatusLabel status={readOnly ? null : autosave.status} />
-        {!readOnly && (
-          <>
-            <button
-              type="button"
-              className="icon-button"
-              aria-label={t('page.undo')}
-              title={t('page.undo')}
-              onClick={() => editor.undo()}
-            >
-              <UndoIcon />
-            </button>
-            <button
-              type="button"
-              className="icon-button"
-              aria-label={t('page.redo')}
-              title={t('page.redo')}
-              onClick={() => editor.redo()}
-            >
-              <RedoIcon />
-            </button>
-          </>
-        )}
+        {!readOnly && <UndoRedoButtons editor={editor} />}
       </Topbar>
       <div className="content-scroll">
         <article className="page">
-          <TitleInput
-            page={page}
-            readOnly={readOnly}
-            onEnter={() => {
-              const first = editor.document[0];
-              if (first) editor.setTextCursorPosition(first, 'start');
-              editor.focus();
-            }}
-          />
+          <TitleInput page={page} readOnly={readOnly} onEnter={() => focusEditorStart(editor)} />
           {showConflict && !readOnly && (
             <div className="page-banner" role="alert">
               <span>{t('page.conflict')}</span>
@@ -232,7 +196,6 @@ function TitleInput({
   readOnly: boolean;
   onEnter: () => void;
 }) {
-  const { t } = useTranslation();
   const qc = useQueryClient();
   const rename = useRenamePage();
   const ref = useRef<HTMLTextAreaElement>(null);
@@ -253,13 +216,6 @@ function TitleInput({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [listTitle]);
 
-  useLayoutEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    el.style.height = 'auto';
-    el.style.height = `${el.scrollHeight}px`;
-  }, [value]);
-
   useEffect(() => {
     if (!page.title && !readOnly) ref.current?.focus();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -279,17 +235,11 @@ function TitleInput({
   useEffect(() => () => clearTimeout(pending.current), []);
 
   return (
-    <textarea
+    <TitleField
       ref={ref}
-      className="page-title"
-      rows={1}
       value={value}
       readOnly={readOnly}
-      maxLength={PAGE_TITLE_MAX_LENGTH}
-      placeholder={t('page.titlePlaceholder')}
-      aria-label={t('page.titlePlaceholder')}
-      onChange={(e) => {
-        const title = e.target.value.replace(/\n/g, '');
+      onChange={(title) => {
         setValue(title);
         // Keep the sidebar in sync while typing.
         qc.setQueryData<PageSummary[]>(queryKeys.pages, (old) =>
@@ -299,12 +249,9 @@ function TitleInput({
         pending.current = setTimeout(() => flush(title), RENAME_DEBOUNCE_MS);
       }}
       onBlur={() => flush(value)}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
-          e.preventDefault();
-          flush(value);
-          onEnter();
-        }
+      onEnter={() => {
+        flush(value);
+        onEnter();
       }}
     />
   );

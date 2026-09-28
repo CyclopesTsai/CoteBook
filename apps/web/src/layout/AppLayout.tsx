@@ -8,36 +8,59 @@ import { Sidebar } from '../sidebar/Sidebar';
 
 const LayoutContext = createContext<{ openSidebar: () => void }>({ openSidebar: () => {} });
 
-export function AppLayout() {
+/**
+ * Sidebar + main area. On small screens the sidebar becomes a drawer that closes after
+ * navigating. Shared by the normal app and the database-less demo.
+ */
+export function LayoutShell({
+  renderSidebar,
+  children,
+}: {
+  renderSidebar: (closeSidebar: () => void) => ReactNode;
+  children: ReactNode;
+}) {
   const location = useLocation();
-  const match = useMatch('/p/:pageId');
-  const activePageId = match?.params.pageId ?? null;
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
+  const close = () => setSidebarOpen(false);
 
-  useSyncEvents(true);
-
-  // On small screens the sidebar is a drawer; close it after navigating.
   useEffect(() => setSidebarOpen(false), [location.pathname]);
 
   return (
     <LayoutContext.Provider value={{ openSidebar: () => setSidebarOpen(true) }}>
       <div className={`app-shell${sidebarOpen ? ' sidebar-open' : ''}`}>
-        <Sidebar
-          activePageId={activePageId}
-          onOpenSearch={() => {
-            setSidebarOpen(false);
-            setSearchOpen(true);
-          }}
-          onClose={() => setSidebarOpen(false)}
-        />
-        <div className="sidebar-backdrop" onClick={() => setSidebarOpen(false)} />
-        <main className="main">
-          <Outlet />
-        </main>
+        {renderSidebar(close)}
+        <div className="sidebar-backdrop" onClick={close} />
+        <main className="main">{children}</main>
       </div>
-      {searchOpen && <SearchDialog onClose={() => setSearchOpen(false)} />}
     </LayoutContext.Provider>
+  );
+}
+
+export function AppLayout() {
+  const match = useMatch('/p/:pageId');
+  const activePageId = match?.params.pageId ?? null;
+  const [searchOpen, setSearchOpen] = useState(false);
+
+  useSyncEvents(true);
+
+  return (
+    <>
+      <LayoutShell
+        renderSidebar={(closeSidebar) => (
+          <Sidebar
+            activePageId={activePageId}
+            onOpenSearch={() => {
+              closeSidebar();
+              setSearchOpen(true);
+            }}
+            onClose={closeSidebar}
+          />
+        )}
+      >
+        <Outlet />
+      </LayoutShell>
+      {searchOpen && <SearchDialog onClose={() => setSearchOpen(false)} />}
+    </>
   );
 }
 

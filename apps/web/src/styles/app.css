@@ -625,3 +625,21 @@ a {
   color: var(--color-text-faint);
   font-size: 14px;
 }
+
+/* ---------- Demo mode (no database) ---------- */
+
+.demo-badge {
+  flex-shrink: 0;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--color-warning-bg);
+  color: var(--color-warning-text);
+  font-size: 12px;
+  white-space: nowrap;
+}
+.demo-footer {
+  padding: 10px 14px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-text-faint);
+}

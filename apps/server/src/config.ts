@@ -30,7 +30,17 @@ const envSchema = z.object({
   /** Set when running behind a reverse proxy so client IPs and protocol are read correctly. */
   TRUST_PROXY: bool.default(false),
 
-  DATABASE_URL: z.string().min(1),
+  /**
+   * Set to false to run without PostgreSQL: the web client then opens in demo mode and
+   * every API that needs the database answers 503 `database_disabled`. Only the literal
+   * values true / false are accepted, because docker compose derives the database
+   * container's profile from this same value.
+   */
+  DATABASE_ENABLED: z
+    .enum(['true', 'false'])
+    .default('true')
+    .transform((v) => v === 'true'),
+  DATABASE_URL: z.string().optional(),
   RUN_MIGRATIONS: bool.default(true),
 
   ALLOW_REGISTRATION: bool.default(true),
@@ -62,6 +72,11 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env) {
   }
   const e = parsed.data;
 
+  if (e.DATABASE_ENABLED && !e.DATABASE_URL) {
+    throw new Error(
+      'Invalid environment configuration:\n  DATABASE_URL is required when DATABASE_ENABLED=true',
+    );
+  }
   if (e.STORAGE_DRIVER === 's3' && !e.S3_BUCKET) {
     throw new Error(
       'Invalid environment configuration:\n  S3_BUCKET is required when STORAGE_DRIVER=s3',
@@ -78,10 +93,12 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env) {
     appUrl,
     corsOrigins: e.CORS_ORIGINS,
     trustProxy: e.TRUST_PROXY,
-    databaseUrl: e.DATABASE_URL,
+    databaseEnabled: e.DATABASE_ENABLED,
+    databaseUrl: e.DATABASE_URL ?? '',
     runMigrations: e.RUN_MIGRATIONS,
     migrationsDir: path.resolve(serverRoot, 'drizzle'),
-    allowRegistration: e.ALLOW_REGISTRATION,
+    // Nobody can sign up (or sign in) without a database.
+    allowRegistration: e.DATABASE_ENABLED && e.ALLOW_REGISTRATION,
     sessionTtlMs: e.SESSION_TTL_DAYS * 24 * 60 * 60 * 1000,
     cookieSecure: e.COOKIE_SECURE ?? appUrl.protocol === 'https:',
     storage: {

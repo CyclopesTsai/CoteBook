@@ -16,7 +16,6 @@ import { CSS } from '@dnd-kit/utilities';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { useMovePage } from '../api/queries';
 import { Menu } from '../components/Menu';
 import { ChevronRightIcon, MoreIcon, PlusIcon, TrashIcon } from '../components/icons';
 import { childrenMap, flattenTree, projectDrop, type FlatItem, type Projection } from './tree';
@@ -31,6 +30,8 @@ interface PageTreeProps {
   onToggle: (id: string, expanded?: boolean) => void;
   onAddChild: (parentId: string) => void;
   onDelete: (page: PageSummary) => void;
+  /** Move a page under `parentId` (null = top level) at `index` among its new siblings. */
+  onMove: (id: string, parentId: string | null, index: number) => void;
 }
 
 export function PageTree({
@@ -40,9 +41,9 @@ export function PageTree({
   onToggle,
   onAddChild,
   onDelete,
+  onMove,
 }: PageTreeProps) {
   const { t } = useTranslation();
-  const move = useMovePage();
   const [dragId, setDragId] = useState<string | null>(null);
   const [overId, setOverId] = useState<string | null>(null);
   const [offsetX, setOffsetX] = useState(0);
@@ -84,10 +85,7 @@ export function PageTree({
     const currentIndex = (map.get(page.parentId) ?? []).findIndex((x) => x.id === id);
     if (p.parentId === page.parentId && p.index === currentIndex) return;
     if (p.parentId) onToggle(p.parentId, true);
-    move.mutate(
-      { id, parentId: p.parentId, index: p.index },
-      { onError: () => window.alert(t('sidebar.moveFailed')) },
-    );
+    onMove(id, p.parentId, p.index);
   };
 
   const dragItem = dragId ? items.find((i) => i.id === dragId) : undefined;

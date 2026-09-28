@@ -2,7 +2,14 @@ import type { PageSummary } from '@cotebook/shared';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { useCreatePage, useDeletePage, useLogout, useMe, usePages } from '../api/queries';
+import {
+  useCreatePage,
+  useDeletePage,
+  useLogout,
+  useMe,
+  useMovePage,
+  usePages,
+} from '../api/queries';
 import { CloseIcon, LogoutIcon, PlusIcon, SearchIcon } from '../components/icons';
 import { PageTree } from './PageTree';
 import { ancestorsOf, subtreeIds } from './tree';
@@ -34,6 +41,7 @@ export function Sidebar({
   const createPage = useCreatePage();
   const deletePage = useDeletePage();
   const logout = useLogout();
+  const movePage = useMovePage();
   const [expanded, setExpanded] = useState<Set<string>>(loadExpanded);
 
   useEffect(() => {
@@ -127,6 +135,12 @@ export function Sidebar({
           onToggle={toggle}
           onAddChild={(id) => create(id)}
           onDelete={remove}
+          onMove={(id, parentId, index) =>
+            movePage.mutate(
+              { id, parentId, index },
+              { onError: () => window.alert(t('sidebar.moveFailed')) },
+            )
+          }
         />
       </div>
       <div className="sidebar-footer">

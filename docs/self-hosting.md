@@ -5,7 +5,7 @@ and PostgreSQL. It needs no external cloud services.
 
 ## Requirements
 
-- Docker Engine 24+ with the Compose plugin (`docker compose version`)
+- Docker Engine 24+ with the Compose plugin 2.20 or newer (`docker compose version`)
 - About 512 MB of RAM and 1 GB of disk space, plus space for your images
 
 ## 1. Install
@@ -169,6 +169,37 @@ docker run -d --name cotebook -p 3000:3000 \
 The database user needs permission to create tables in its schema. No extensions are
 required.
 
+## Running without a database (demo mode)
+
+To show CoteBook without keeping any data, for example as a public demo or to try the
+interface, switch the database off in `.env`:
+
+```bash
+DATABASE_ENABLED=false
+```
+
+```bash
+docker compose up -d
+```
+
+What happens:
+
+- Docker Compose doesn't start the PostgreSQL container. The `db` service's profile is
+  derived from `DATABASE_ENABLED`, and `COMPOSE_PROFILES=database-true` in `.env` only
+  activates it while the switch is `true`. `POSTGRES_PASSWORD` may stay empty.
+- The web app opens in demo mode with a few sample pages. The editor, slash menu,
+  formatting, page tree (including drag and drop) and image insertion all work, but
+  everything stays in the browser tab and disappears on reload. Images are never uploaded.
+- Accounts, saving, search and cross-device sync are unavailable. Every API endpoint
+  except `/api/health` and `/api/config` answers `503` with the error code
+  `database_disabled`.
+
+`DATABASE_ENABLED` accepts only `true` or `false`. To go back, set it to `true` and run
+`docker compose up -d` again. Data from before the switch is still in the `db-data` volume.
+
+Without Docker, start the server with `DATABASE_ENABLED=false`. `DATABASE_URL` isn't needed
+then.
+
 ## Troubleshooting
 
 - **Can't log in; the browser keeps returning to the login page.** `APP_URL` probably
@@ -178,3 +209,6 @@ required.
   `Host` header. Make sure your proxy forwards `Host`, or add the origin to `CORS_ORIGINS`.
 - **Live sync doesn't update other devices.** Your proxy is buffering `/api/events`. See
   the nginx example above.
+- **The app exits with "Could not prepare the database" and the `db` container isn't
+  running.** Your `.env` is missing `COMPOSE_PROFILES=database-true` (for example, it was
+  created from an older `.env.example`). Add the line and run `docker compose up -d`.

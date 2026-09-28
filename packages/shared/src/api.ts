@@ -40,6 +40,11 @@ export interface AuthResponse {
 
 /** Public, unauthenticated instance configuration. */
 export interface InstanceConfig {
+  /**
+   * False when the server runs without a database (DATABASE_ENABLED=false). Clients
+   * then offer a local, unsaved demo instead of signing in.
+   */
+  databaseEnabled: boolean;
   registrationEnabled: boolean;
   /** Third-party login providers configured on this instance (none yet). */
   authProviders: string[];

@@ -28,6 +28,15 @@ npm run dev
 
 Open <http://localhost:5173>.
 
+### Working on the UI without PostgreSQL
+
+Set `DATABASE_ENABLED=false` in `.env`, or run
+`DATABASE_ENABLED=false npm run dev`. The server then needs no database, and the web client
+opens in demo mode (`apps/web/src/demo/`). The demo uses the real editor, page tree and
+layout with in-memory sample pages, which makes it handy for editor and styling work.
+Features that talk to the API (sign-in, saving, search, sync) are only available with a
+database.
+
 ## Project layout
 
 ```

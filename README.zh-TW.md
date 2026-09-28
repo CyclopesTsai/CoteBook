@@ -20,6 +20,9 @@
 - **響應式網頁**：同一個網頁版可在桌機與手機瀏覽器上使用。
 - **自行架設**：一個 Docker Compose 檔即可啟動應用程式與 PostgreSQL。所有設定都透過環境變數，
   圖片可存放在本機磁碟或任何 S3 相容儲存。
+- **展示模式**：在 `.env` 設定 `DATABASE_ENABLED=false`，就能在不啟動 PostgreSQL 的情況下執行，
+  網頁會開啟不會儲存的展示用編輯器，資料庫容器也不會啟動。詳見
+  [Running without a database](docs/self-hosting.md#running-without-a-database-demo-mode)（英文）。
 - **介面語言**：英文、繁體中文。
 
 ## 快速開始（自行架設）
