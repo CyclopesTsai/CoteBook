@@ -20,8 +20,13 @@ export default tseslint.config(
     },
   },
   {
-    files: ['apps/server/**/*.ts', 'packages/**/*.ts', '*.js'],
+    files: ['apps/server/**/*.ts', 'packages/**/*.ts', 'scripts/**/*.mjs', '*.js'],
     languageOptions: { globals: globals.node },
+  },
+  {
+    // Smoke scripts run in Node but pass callbacks to page.evaluate() in the browser.
+    files: ['scripts/**/*.mjs'],
+    languageOptions: { globals: { ...globals.node, ...globals.browser } },
   },
   {
     files: ['apps/web/**/*.{ts,tsx}'],

@@ -69,6 +69,7 @@ the HTTP API.
 ## Status
 
 This is the first (MVP) release of the [product specification](docs/spec.zh-TW.md).
+Open work, decisions and known gaps are tracked in [docs/status.md](docs/status.md).
 
 | Area      | Included now                                                                                               | Planned later                                                                                                           |
 | --------- | ---------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
